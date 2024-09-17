@@ -1,1 +1,125 @@
-/* You can add global styles to this file, and also import other style files */
+
+html, body {
+  height: 100%;
+}
+
+* {
+  font-family: appFont;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+.row-center {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.row-left {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+.row-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
+.row-left-stretch {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.row-right-stretch {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.col-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.col-top {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+
+.col-bottom {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
+.col-top-strech {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.app-card {
+  display: flex;
+  flex-direction: column;
+  border: solid black 1px;
+  border-radius: 5px;
+}
+.app-card-toolbar {
+  gap: 10px;
+  font-size: 0.9em;
+  border-bottom : solid 1px black;
+  padding: 8px;
+}
+.app-card-title {
+  flex: 1 1 auto;
+  align-self: stretch;
+  font-size: 140%;
+  padding-left: 10px;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    //border: 1px solid lightgrey;
+    background-color: rgba(0, 0, 0, .25);
+}
+
+::-webkit-scrollbar-track {
+    background-color: lightblue;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

@@ -1,0 +1,22 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 10px;
+    border: 1px solid lightgray;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.item-name {
+    user-select: none;
+    border-bottom: 1px solid orange;
+    padding: 3px;
+}
+
+.f-val {
+    user-select: none;
+    text-align: right;
+    font-size: 1.8rem;
+}

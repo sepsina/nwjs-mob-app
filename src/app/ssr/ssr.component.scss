@@ -1,0 +1,43 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 10px;
+    border: 1px solid lightgray;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.item-name {
+    user-select: none;
+    border-bottom: 1px solid orange;
+    padding: 3px;
+}
+
+.btn-frame {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px
+}
+
+button {
+    font-size: 1.0rem;
+    color: gray;
+    padding: 4px 8px;
+    white-space: nowrap;
+    user-select: none;
+}
+
+#off-button {
+    width: 30%;
+}
+
+#toggle-button {
+    flex: 1 1 100%;
+}
+
+#on-button {
+    width: 30%;
+}

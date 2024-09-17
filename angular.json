@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "mob-app-v1": {
+    "bridge-html-test": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/mob-app-v1",
+            "outputPath": "dist/bridge-html-test",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -26,13 +26,26 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
+                {
+                    "glob": "**/*",
+                    "ignore": ["package.json"],
+                    "input": "src/assets/",
+                    "output": "/assets/"
+                },
+                {
+                    "glob": "favicon.ico",
+                    "input": "src/",
+                    "output": "/"
+                },
+                {
+                    "glob": "package.json",
+                    "input": "src/assets/",
+                    "output": "/"
+                }
             ],
             "styles": [
-              "src/styles.scss"
+                "src/styles.scss",
+                "src/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css"
             ],
             "scripts": []
           },
@@ -41,7 +54,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "700kB",
                   "maximumError": "1MB"
                 },
                 {
@@ -64,10 +77,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "mob-app-v1:build:production"
+              "buildTarget": "bridge-html-test:build:production"
             },
             "development": {
-              "buildTarget": "mob-app-v1:build:development"
+              "buildTarget": "bridge-html-test:build:development"
             }
           },
           "defaultConfiguration": "development"
