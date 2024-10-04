@@ -2,23 +2,19 @@
 <div class="item-name">
     {{onOff.name}}
 </div>
-<div class="btn-frame">
+<div class="row-left">
     <button
         [disabled]="onOff.busy"
-        id="off-button"
         (click)="setActuatorOff()">
         <i class="fa fa-toggle-off"></i> off
     </button>
     <button
         [disabled]="onOff.busy"
-        mat-stroked-button
-        id="toggle-button"
         (click)="toggleActuator()">
         <i class="fa fa-retweet"></i> toggle
     </button>
     <button
         [disabled]="onOff.busy"
-        id="on-button"
         (click)="setActuatorOn()">
         <i class="fa fa-toggle-on"></i> on
     </button>

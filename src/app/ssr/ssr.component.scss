@@ -11,33 +11,16 @@
 
 .item-name {
     user-select: none;
+    color: gray;
     border-bottom: 1px solid orange;
-    padding: 3px;
-}
-
-.btn-frame {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 10px
+    padding: 2px;
 }
 
 button {
+    flex: 1 1 100%;
     font-size: 1.0rem;
     color: gray;
     padding: 4px 8px;
     white-space: nowrap;
     user-select: none;
-}
-
-#off-button {
-    width: 30%;
-}
-
-#toggle-button {
-    flex: 1 1 100%;
-}
-
-#on-button {
-    width: 30%;
 }

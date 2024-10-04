@@ -1,5 +1,5 @@
 {
-  "name": "mob-app-v1",
+  "name": "mob-app",
   "version": "0.0.0",
   "main": "http://localhost:8964",
   "node-remote": "http://localhost:8964",

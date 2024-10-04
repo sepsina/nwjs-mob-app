@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import { UdpService } from '../udp.service';
 
 import * as gConst from '../gConst';
@@ -14,28 +14,19 @@ const TOGGLE = 2;
     templateUrl: './ssr.component.html',
     styleUrls: ['./ssr.component.scss']
 })
-export class ssrComponent implements OnInit {
+export class ssrComponent {
 
     @Input() onOff!: gIF.onOffItem_t;
 
     rxBuf = new Uint8Array(1024);
     txBuf = new Uint8Array(1024);
-
     rwBuf = new gIF.rwBuf_t();
 
     constructor(
-        private udp: UdpService
+        private udp: UdpService,
+        private zone: NgZone
     ) {
         this.rwBuf.wrBuf = new DataView(this.txBuf.buffer);
-    }
-
-    /***********************************************************************************************
-     * @fn          ngOnInit
-     *
-     * @brief
-     *
-     */
-    ngOnInit(): void {
     }
 
     /***********************************************************************************************
@@ -133,9 +124,9 @@ export class ssrComponent implements OnInit {
                     console.log('tun on err: ' + JSON.stringify(err));
             }
         });
-        setTimeout(()=>{
+        this.zone.run(()=>{
             this.onOff.busy = true;
-        }, 0);
+        });
         this.onOff.tmo = setTimeout(() => {
             this.onOff.busy = false;
         }, 1000);
