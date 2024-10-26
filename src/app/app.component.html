@@ -1,14 +1,11 @@
 <div class='row-left-stretch app-header'>
     <div class="row-left sel-name">
-        {{getSelDesc()}}
+        {{desc()}}
     </div>
-    <button (click)="readSelected()">
-        <i class="fa fa-arrow-down"></i> read
-    </button>
 </div>
 
 <div class="items-frame">
-    @for(item of itemsMap | keyvalue; track item.key){
+    @for(item of items() | keyvalue; track item.key){
         @switch(item.value.type){
             @case(g_const.ACTUATOR_ON_OFF){
                 <ssr [onOff]="item.value"></ssr>
@@ -21,24 +18,16 @@
 </div>
 
 <div class="app-footer">
-    <button
-        (click)="selTemp()"
-        [disabled]="udpBusy">
+    <button (click)="readTemp()">
         temp
     </button>
-    <button
-        (click)="selRH()"
-        [disabled]="udpBusy">
+    <button (click)="readRH()">
         humidity
     </button>
-    <button
-        (click)="selAQ()"
-        [disabled]="udpBusy">
+    <button (click)="readAQ()">
         air quality
     </button>
-    <button
-        (click)="selOnOffAct()"
-        [disabled]="udpBusy">
+    <button (click)="readOnOffAct()">
         on-off
     </button>
 </div>

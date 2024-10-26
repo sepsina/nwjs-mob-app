@@ -1,7 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
-import { EventsService } from './events.service';
-import { UtilsService } from './utils.service';
-
+import { Injectable, signal } from '@angular/core';
 import * as gConst from './gConst';
 import * as gIF from './gIF';
 
@@ -15,8 +12,7 @@ export class UdpService {
     private dgram: any;
     public udpSocket: any;
 
-    bridges: gIF.bridge_t[] = [];
-    bridgesFlag = false;
+    private bridges: gIF.bridge_t[] = [];
 
     seqNum = 0;
 
@@ -29,17 +25,13 @@ export class UdpService {
         retryCnt: gConst.RD_CMD_RETRY_CNT,
     };
 
-    itemsRef: any;
+    itemsMap = signal(new Map());
 
     rxBuf = new Uint8Array(1024);
     txBuf = new Uint8Array(1024);
     rwBuf = new gIF.rwBuf_t();
 
-    constructor(
-        private events: EventsService,
-        private utils: UtilsService,
-        private ngZone: NgZone
-    ) {
+    constructor() {
         this.dgram = window.nw.require('dgram');
         this.udpSocket = this.dgram.createSocket('udp4');
         this.udpSocket.on('message', (msg: any, rinfo: any)=>{
@@ -98,10 +90,12 @@ export class UdpService {
                     item.name = String.fromCharCode.apply(String, name);
                     item.ip = rem.address;
                     item.port = rem.port;
-                    item.busy = false;
 
                     let key = this.itemKey(item.extAddr, item.endPoint);
-                    this.events.publish('newItem', {key: key, value: item});
+                    this.itemsMap.update((map)=>{
+                        map.set(key, item);
+                        return new Map(map);
+                    });
                 }
                 clearTimeout(this.rdCmd.tmoRef);
                 if(doneFlag == 1) {
@@ -195,7 +189,10 @@ export class UdpService {
                     item.name = String.fromCharCode.apply(String, name);
 
                     let key = this.itemKey(item.extAddr, item.endPoint);
-                    this.events.publish('newItem', {key: key, value: item});
+                    this.itemsMap.update((map)=>{
+                        map.set(key, item);
+                        return new Map(map);
+                    });
                 }
                 clearTimeout(this.rdCmd.tmoRef);
                 if(doneFlag == 1) {
@@ -231,7 +228,7 @@ export class UdpService {
                 if(msgSeqNum === this.seqNum){
                     if(clusterID === gConst.CLUSTER_ID_GEN_ON_OFF){
                         const key = this.itemKey(extAddr, endPoint);
-                        const item: gIF.onOffItem_t = this.itemsRef.get(key);
+                        const item: gIF.onOffItem_t = this.itemsMap().get(key);
                         if(item){
                             if(status === 0){
                                 console.log(`cmd to ${item.name}: success`);
@@ -239,10 +236,6 @@ export class UdpService {
                             else {
                                 console.log(`cmd to ${item.name}: fail`);
                             }
-                            clearTimeout(item.tmo);
-                            setTimeout(()=>{
-                                item.busy = false;
-                            });
                         }
                     }
                 }
@@ -265,6 +258,12 @@ export class UdpService {
         if(this.bridges.length == 0){
             return;
         }
+        if(this.rdCmd.busy == true){
+            return;
+        }
+
+        this.itemsMap.set(new Map());
+
         this.rdCmd.cmdID = cmdID;
         this.rdCmd.busy = true;
         this.rdCmd.ip = [];
@@ -365,22 +364,6 @@ export class UdpService {
         }
 
         return `item-${key.join('')}`;
-
-        /*
-        const len = 8 + 1;
-        const ab = new ArrayBuffer(len);
-        const dv = new DataView(ab);
-        let i = 0;
-        dv.setFloat64(i, extAddr, gConst.LE);
-        i += 8;
-        dv.setUint8(i++, endPoint);
-        let key = [];
-        for (let i = 0; i < len; i++) {
-            key[i] = dv.getUint8(i).toString(16);
-        }
-
-        return `item-${key.join('')}`;
-        */
     }
 
     /***********************************************************************************************
@@ -408,12 +391,6 @@ export class UdpService {
             };
             this.bridges.push(newBridge);
         }
-        if(this.bridges.length > 0){
-            this.bridgesFlag = true;
-        }
-        else {
-            this.bridgesFlag = false;
-        }
     }
 
     /***********************************************************************************************
@@ -435,15 +412,9 @@ export class UdpService {
                 }
             }
         }
-        if(this.bridges.length > 0){
-            this.bridgesFlag = true;
-        }
-        else {
-            this.bridgesFlag = false;
-        }
-
         setTimeout(()=>{
             this.cleanAgedBridges();
         }, 1000);
     }
+
 }

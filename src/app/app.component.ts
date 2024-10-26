@@ -1,10 +1,10 @@
 import {
     Component,
-    OnInit,
-    OnDestroy,
-    NgZone
+    HostListener,
+    computed,
+    inject,
+    signal
 } from '@angular/core';
-import { EventsService } from './events.service';
 import { UdpService } from './udp.service';
 
 import { CommonModule } from '@angular/common';
@@ -31,168 +31,74 @@ const ON_OFF_ACT = 4;
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, OnDestroy{
+export class AppComponent {
 
-    selectedType = NO_SEL;
+    udp = inject(UdpService);
+
     g_const = gConst;
 
-    udpBusy = false;
-    itemsMap = new Map();
+    items = computed(()=>{
+        return this.udp.itemsMap();
+    });
+    desc = signal('- - -');
 
-    constructor(
-        public udp: UdpService,
-        public events: EventsService,
-        public ngZone: NgZone
-    ) {
+    constructor(){
         // ---
     }
 
     /***********************************************************************************************
-     * fn          ngOnInit
+     * fn          closeComms
      *
      * brief
      *
      */
-    ngOnInit() {
-
-        this.udpBusy = this.udp.rdCmd.busy;
-        this.udp.itemsRef = this.itemsMap;
-
-        this.events.subscribe('newItem', (msg)=>{
-            this.ngZone.run(()=>{
-                this.itemsMap.set(msg.key, msg.value);
-            });
-        });
-        window.onbeforeunload = ()=>{
-            this.ngOnDestroy();
-        };
-        setTimeout(()=>{
-            this.readSelected();
-        }, 100);
-
-    }
-
-    /***********************************************************************************************
-     * fn          ngOnDestroy
-     *
-     * brief
-     *
-     */
-    ngOnDestroy() {
+    @HostListener('window:beforeunload')
+    closeComms(){
         this.udp.udpSocket.close();
-    }
+    };
 
-     /***********************************************************************************************
-     * @fn          readSelected
+    /***********************************************************************************************
+     * @fn          readTemp
      *
      * @brief
      *
      */
-    readSelected(){
-
-        if(this.udpBusy == true || this.udp.bridges.length == 0){
-            return;
-        }
-
-        this.itemsMap.clear();
-
-        switch(this.selectedType){
-            case ON_OFF_ACT: {
-                this.udp.readItems(gConst.ON_OFF_ACTUATORS);
-                break;
-            }
-            case T_SENS: {
-                this.udp.readItems(gConst.T_SENSORS);
-                break;
-            }
-            case RH_SENS: {
-                this.udp.readItems(gConst.RH_SENSORS);
-                break;
-            }
-            case AQ_SENS: {
-                this.udp.readItems(gConst.AQ_SENSORS);
-                break;
-            }
-            default:
-                break;
-        }
+    readTemp(){
+        this.desc.set('temperature');
+        this.udp.readItems(gConst.T_SENSORS);
     }
 
     /***********************************************************************************************
-     * @fn          getSelDesc
+     * @fn          readRH
      *
      * @brief
      *
      */
-    getSelDesc(){
-
-        let desc = '- - -';
-
-        switch(this.selectedType){
-            case ON_OFF_ACT: {
-                desc = 'on-off actuators';
-                break;
-            }
-            case T_SENS: {
-                desc = 'temperature';
-                break;
-            }
-            case RH_SENS: {
-                desc = 'humidity';
-                break;
-            }
-            case AQ_SENS: {
-                desc = 'air quality';
-                break;
-            }
-            default:
-                break;
-        }
-        return desc;
+    readRH(){
+        this.desc.set('humidity');
+        this.udp.readItems(gConst.RH_SENSORS);
     }
 
     /***********************************************************************************************
-     * @fn          selTemp
+     * @fn          readAQ
      *
      * @brief
      *
      */
-    selTemp(){
-        this.selectedType = T_SENS;
-        this.readSelected();
+    readAQ(){
+        this.desc.set('air quality');
+        this.udp.readItems(gConst.AQ_SENSORS);
     }
 
     /***********************************************************************************************
-     * @fn          selRH
+     * @fn          readOnOffAct
      *
      * @brief
      *
      */
-    selRH(){
-        this.selectedType = RH_SENS;
-        this.readSelected();
-    }
-
-    /***********************************************************************************************
-     * @fn          selAQ
-     *
-     * @brief
-     *
-     */
-    selAQ(){
-        this.selectedType = AQ_SENS;
-        this.readSelected();
-    }
-
-    /***********************************************************************************************
-     * @fn          selOnOffAct
-     *
-     * @brief
-     *
-     */
-    selOnOffAct(){
-        this.selectedType = ON_OFF_ACT;
-        this.readSelected();
+    readOnOffAct(){
+        this.desc.set('on-off actuators');
+        this.udp.readItems(gConst.ON_OFF_ACTUATORS);
     }
 
 }

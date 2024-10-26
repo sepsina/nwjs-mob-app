@@ -1,4 +1,4 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { UdpService } from '../udp.service';
 
 import * as gConst from '../gConst';
@@ -16,16 +16,17 @@ const TOGGLE = 2;
 })
 export class ssrComponent {
 
-    @Input() onOff!: gIF.onOffItem_t;
+    udp = inject(UdpService);
+
+    onOff = input.required<gIF.onOffItem_t>();
+    busyFlag = signal(false);
+    tmo: any;
 
     rxBuf = new Uint8Array(1024);
     txBuf = new Uint8Array(1024);
     rwBuf = new gIF.rwBuf_t();
 
-    constructor(
-        private udp: UdpService,
-        private zone: NgZone
-    ) {
+    constructor() {
         this.rwBuf.wrBuf = new DataView(this.txBuf.buffer);
     }
 
@@ -85,8 +86,8 @@ export class ssrComponent {
 
         this.rwBuf.write_uint16_LE(gConst.UDP_ZCL_CMD);
         this.rwBuf.write_uint8(this.udp.seqNum);
-        this.rwBuf.write_uint64_LE(this.onOff.extAddr);
-        this.rwBuf.write_uint8(this.onOff.endPoint);
+        this.rwBuf.write_uint64_LE(this.onOff().extAddr);
+        this.rwBuf.write_uint8(this.onOff().endPoint);
         this.rwBuf.write_uint16_LE(gConst.CLUSTER_ID_GEN_ON_OFF);
         this.rwBuf.write_uint8(0); // hasRsp -> no
         const cmdLenIdx = this.rwBuf.wrIdx;
@@ -117,18 +118,16 @@ export class ssrComponent {
             this.txBuf.slice(0, msgLen),
             0,
             msgLen,
-            this.onOff.port,
-            this.onOff.ip,
+            this.onOff().port,
+            this.onOff().ip,
             (err: any)=>{
                 if(err){
                     console.log('tun on err: ' + JSON.stringify(err));
             }
         });
-        this.zone.run(()=>{
-            this.onOff.busy = true;
-        });
-        this.onOff.tmo = setTimeout(() => {
-            this.onOff.busy = false;
+        this.busyFlag.set(true);
+        this.tmo = setTimeout(() => {
+            this.busyFlag.set(false);
         }, 1000);
     }
 

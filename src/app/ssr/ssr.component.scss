@@ -16,8 +16,11 @@
     padding: 2px;
 }
 
+#buttons {
+    justify-content: space-between;
+}
+
 button {
-    flex: 1 1 100%;
     font-size: 1.0rem;
     color: gray;
     padding: 4px 8px;

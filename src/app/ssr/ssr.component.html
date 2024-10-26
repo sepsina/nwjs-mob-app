@@ -1,20 +1,20 @@
 
 <div class="item-name">
-    {{onOff.name}}
+    {{onOff().name}}
 </div>
-<div class="row-left">
+<div class="row-left" id="buttons">
     <button
-        [disabled]="onOff.busy"
+        [disabled]="busyFlag()"
         (click)="setActuatorOff()">
         <i class="fa fa-toggle-off"></i> off
     </button>
     <button
-        [disabled]="onOff.busy"
+        [disabled]="busyFlag()"
         (click)="toggleActuator()">
         <i class="fa fa-retweet"></i> toggle
     </button>
     <button
-        [disabled]="onOff.busy"
+        [disabled]="busyFlag()"
         (click)="setActuatorOn()">
         <i class="fa fa-toggle-on"></i> on
     </button>
